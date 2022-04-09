@@ -1,11 +1,14 @@
 package game4j;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -18,13 +21,25 @@ public class Main extends Application {
 
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
+        
 
-        StackPane root = new StackPane();
+        FlowPane root = new FlowPane();
         root.getChildren().add(btn);
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                root.getChildren().remove(btn);
+                System.out.println("Hello World!");
+            }
+        });
 
-        Scene scene = new Scene(root, 300, 250);
+        Label title = new Label();
+        title.setText("Bienvenue sur notre application Game4j");
+        root.getChildren().add(title);
 
-        primaryStage.setTitle("Hello World!");
+        Scene scene = new Scene(root, 600, 400);
+
+        primaryStage.setTitle("Home - Game4j");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
