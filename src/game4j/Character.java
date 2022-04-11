@@ -5,66 +5,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Character {
-    private int startEnergy;
-    private int currentEnergy;
-    private List<Integer> charPos;
-    private int xPos;
-    private int yPos;
+    private int energy;
+    private int x;
+    private int y;
 
-    private void iniPos(){
-        charPos.add(xPos);
-        charPos.add(yPos);
+    public Character(int energy, int x, int y){
+        this.x      = x;
+        this.y      = y;
+        this.energy = energy;
     }
 
-
-    public int getStartEnergy() {
-        return startEnergy;
+    public void setX(int x){
+        this.x = x;
     }
 
-    public List<Integer> getCharPos() {
-        return charPos;
+    public int getX(){
+        return this.x;
     }
 
-    public int getCurrentEnergy() {
-        return currentEnergy;
+    public void setY(int y){
+        this.y = y;
     }
 
-    public Character(int sE, int cE, List<Integer> cP){
-        this.charPos=cP;
-        this.currentEnergy=cE;
-        this.startEnergy=sE;
+    public int getY(){
+        return this.y;
     }
 
-    public void setCharPos(int x, int y) {
-        this.charPos.add(x);
-        this.charPos.add(y);
+    public void setEnergy(int energy) {
+        this.energy = energy;
     }
 
-    public void setCurrentEnergy(int currentEnergy) {
-        this.currentEnergy = currentEnergy;
+    public int getEnergy(){
+        return this.energy;
     }
 
-    public void setStartEnergy(int startEnergy) {
-        this.startEnergy = startEnergy;
-    }
-
-    public void move(String direction){
-        switch(direction){
-            case "left":
-                this.setCharPos(this.getCharPos().get(0)-1, this.getCharPos().get(1));
-                break;
-            case "right":
-                this.setCharPos(this.getCharPos().get(0)+1, this.getCharPos().get(1));
-                break;
-            case "up":
-                this.setCharPos(this.getCharPos().get(0), this.getCharPos().get(1)+1);
-                break;
-            case "down":
-                this.setCharPos(this.getCharPos().get(0), this.getCharPos().get(1)-1);
-                break;
+    public void move(int dx, int dy, List<Square> squarelist, int width, int height){
+        //System.out.println("dx: " + dx + "dy: " + dy);
+        if (true){
 
         }
     }
-
 
 }
