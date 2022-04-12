@@ -13,6 +13,7 @@ public class Square {
     private float width;
     private float height;
     private int id;
+    boolean wasBonus = false;
     private char squareType; // V pour vide, B pour Bonus, O pour Obstacle, A pour Arrivée
     private Rectangle rendu;
 
@@ -103,6 +104,13 @@ public class Square {
     public void becomeVoid(){
         this.squareType = 'V';
         this.rendu.setFill(Color.GRAY);
+        this.wasBonus = true;
+    }
+
+    public void cancelVoid(){
+        this.squareType = 'B';
+        this.rendu.setFill(Color.YELLOW);
+        this.wasBonus = false;
     }
 
 }

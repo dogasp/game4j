@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -25,6 +28,7 @@ public class Game {
     private float squareWidth;
     private float squareHeight;
     private int startEnergy;
+    private Label labelStamina;
 
     public Game(AnchorPane root){
         this.pane = root;
@@ -69,9 +73,14 @@ public class Game {
         }
 
         this.player = new Character(this.startEnergy, this.start.getX(), this.start.getY());
+        this.labelStamina = new Label("Stamina : " + player.getEnergy()); //bouger label vers la classe Game
+        AnchorPane.setRightAnchor(this.labelStamina, 100.0);
+
+        this.pane.getChildren().add(this.labelStamina);
 
         this.pane.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override public void handle( KeyEvent event ) {
+            @Override
+            public void handle( KeyEvent event ) {
                 switch(event.getCode()){ // ignorer le warning tout foncitonne
                     case UP:
                         player.move(0, -1, squarelist, width, height);
@@ -87,6 +96,8 @@ public class Game {
                         break;
                 }
                 event.consume();
+                
+                labelStamina.setText("Stamina : " + player.getEnergy()); // actualisation de la stamina
             }
         }); 
 
@@ -95,6 +106,27 @@ public class Game {
         }
 
         player.afficher(this.pane);
-        
+
+        player.initHistory(this.start);
+
+        Button cancelBtn = new Button();
+        cancelBtn.setText("Cancel move");
+        AnchorPane.setBottomAnchor(cancelBtn, 50.0);
+        AnchorPane.setRightAnchor(cancelBtn, 90.0);
+
+        cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (player.getnbReturn() < 6){
+                    player.setnbReturn(player.getnbReturn()+1);
+                }
+                player.cancel();
+                pane.requestFocus();
+            }
+        });
+
+        this.pane.requestFocus(); //empeche que le bouton cancel prenne le focus et dérange la prise d'input
+
+        this.pane.getChildren().add(cancelBtn);
     }
 }
