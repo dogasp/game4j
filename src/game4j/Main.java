@@ -11,6 +11,9 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    public static int windowWidth = 800;
+    public static int WindowHeight = 600;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         /*Interface de bienvenue, on peut afficher les rêgles du jeu / lancer une partie*/
@@ -41,7 +44,7 @@ public class Main extends Application {
 
         root.getChildren().add(title);
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, windowWidth, WindowHeight);
 
         primaryStage.setTitle("Home - Game4j");
         primaryStage.setScene(scene);

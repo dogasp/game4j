@@ -37,18 +37,17 @@ public class Game {
             Scanner myReader = new Scanner(myObj);
             String line = myReader.nextLine();
             this.width = Integer.parseInt(line);
-            this.squareWidth = 400/this.width;
+            this.squareWidth = Main.WindowHeight/this.width;
             line = myReader.nextLine();
             this.height = Integer.parseInt(line);
-            this.squareHeight = 400/this.height;
+            this.squareHeight = Main.WindowHeight/this.height;
             line = myReader.nextLine();
             this.startEnergy = Integer.parseInt(line);
-
 
             for(int i = 0; i < this.height; i ++){
                 String tmp = myReader.nextLine();
                 for (int j = 0; j < this.width; j ++){
-                    squarelist.add(new Square(j, i, i*10+j, tmp.charAt(j)));
+                    squarelist.add(new Square(j, i, this.squareWidth, this.squareHeight, i*10+j, tmp.charAt(j)));
                     if (tmp.charAt(j) == 'D'){
                         this.start = squarelist.get(j);
                     }
@@ -94,6 +93,8 @@ public class Game {
         for (Square square : squarelist) {
             square.afficher(this.pane);
         }
+
+        player.afficher(this.pane);
         
     }
 }

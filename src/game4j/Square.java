@@ -4,16 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class Square {
     private int x;
     private int y;
+    private float width;
+    private float height;
     private int id;
     private char squareType; // V pour vide, B pour Bonus, O pour Obstacle, A pour Arrivée
+    private Rectangle rendu;
 
-    public Square(int x, int y, int id, char type){
+    public Square(int x, int y, float width, float height, int id, char type){
         this.x = x;
         this.y = y;
+        this.width = width;
+        this.height = height;
         this.id = id;
         this.squareType = type;
     }
@@ -73,8 +80,29 @@ public class Square {
     }
 
     public void afficher(AnchorPane root){
-
+        this.rendu = new Rectangle(this.x*this.width, this.y*this.height, this.width, this.height);
+        switch (this.squareType){
+            case 'V':
+                this.rendu.setFill(Color.GRAY);
+                break;
+            case 'D':
+                this.rendu.setFill(Color.BLUEVIOLET);
+                break;
+            case 'A':
+                this.rendu.setFill(Color.RED);
+                break;
+            case 'O':
+                this.rendu.setFill(Color.GREEN);
+                break;
+            case 'B':
+                this.rendu.setFill(Color.YELLOW);
+        }
+        root.getChildren().add(this.rendu);
     }
 
+    public void becomeVoid(){
+        this.squareType = 'V';
+        this.rendu.setFill(Color.GRAY);
+    }
 
 }
