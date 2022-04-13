@@ -3,6 +3,7 @@ package game4j;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,8 +26,7 @@ public class Game {
     private Character player;
     private int width;
     private int height;
-    private float squareWidth;
-    private float squareHeight;
+    private float squareLength;
     private int startEnergy;
     private Label labelStamina;
 
@@ -34,24 +34,25 @@ public class Game {
         this.pane = root;
     }
 
-    public void start() {
-        //lecture de la map (on pourrait demande à l'utilisateur laquelle il veut utiliser)
+    public void loadMap(String file){
         try {
-            File myObj = new File("ressources/maps/test.map");
+            File myObj = new File(file);
             Scanner myReader = new Scanner(myObj);
             String line = myReader.nextLine();
             this.width = Integer.parseInt(line);
-            this.squareWidth = Main.WindowHeight/this.width;
+
+            this.squareLength = Main.WindowHeight/this.width;
             line = myReader.nextLine();
             this.height = Integer.parseInt(line);
-            this.squareHeight = Main.WindowHeight/this.height;
+
             line = myReader.nextLine();
             this.startEnergy = Integer.parseInt(line);
 
             for(int i = 0; i < this.height; i ++){
-                String tmp = myReader.nextLine();
                 for (int j = 0; j < this.width; j ++){
-                    squarelist.add(new Square(j, i, this.squareWidth, this.squareHeight, i*10+j, tmp.charAt(j)));
+                    String tmp = myReader.nextLine();
+                    String[] data = tmp.split(" ");
+                    squarelist.add(new Square(j, i, this.squareLength, i*this.width+j, this.width, data[0], Arrays.copyOfRange(data, 1, 5)));
                     if (tmp.charAt(j) == 'D'){
                         this.start = squarelist.get(j);
                     }
@@ -71,8 +72,13 @@ public class Game {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
 
-        this.player = new Character(this.startEnergy, this.start.getX(), this.start.getY());
+    public void start() {
+        //lecture de la map (on pourrait demande à l'utilisateur laquelle il veut utiliser)
+        loadMap("ressources/maps/test.map");
+
+        this.player = new Character(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
         this.labelStamina = new Label("Stamina : " + player.getEnergy()); //bouger label vers la classe Game
         AnchorPane.setRightAnchor(this.labelStamina, 100.0);
 
@@ -120,7 +126,7 @@ public class Game {
                 if (player.getnbReturn() < 6){
                     player.setnbReturn(player.getnbReturn()+1);
                 }
-                player.cancel();
+                player.cancel(labelStamina);
                 pane.requestFocus();
             }
         });

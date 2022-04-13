@@ -1,10 +1,10 @@
 package game4j;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.animation.TranslateTransition;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -14,14 +14,18 @@ public class Character {
     private int energy;
     private int x;
     private int y;
+    private int EarnedEnergy;
+    private int LostEnergy;
+    private float squareLength;
     private Rectangle rendu;
     private int nbReturn; // nombre de retours en arrière (limite de 6)
     private List<Square> historiqueSquare = new ArrayList<Square>();
 
-    public Character(int energy, int x, int y){
-        this.x      = x;
-        this.y      = y;
+    public Character(int energy, int x, int y, float squareLength){
+        this.x = x;
+        this.y = y;
         this.energy = energy;
+        this.squareLength = squareLength;
     }
 
     public int getnbReturn(){
@@ -58,22 +62,26 @@ public class Character {
 
     public void move(int dx, int dy, List<Square> squarelist, int width, int height){
         if ((this.x + dx) < width && (this.x + dx) > -1 && (this.y + dy) < height && (this.y + dy) > -1){
-            Square nextSquare = squarelist.get((this.y+dy)*10 + (this.x+dx));
+            Square nextSquare = squarelist.get((this.y+dy)*width + (this.x+dx));
+            //int distance = this.historiqueSquare.get(this.historiqueSquare.size() - 1).getDistance(nextSquare);
 
             this.historiqueSquare.add(nextSquare);
 
             this.energy -= 1;
+            this.LostEnergy +=1;
             switch (nextSquare.getSquareType()){
                 case 'A':
                     this.Win();
                     break;
                 case 'O':
                     this.energy -= 10;
+                    this.LostEnergy += 10;
                     this.historiqueSquare.add(this.historiqueSquare.get(this.historiqueSquare.size() - 2));
                     this.afficherBoucle();
                     return;
                 case 'B':
                     this.energy += 10;
+                    this.EarnedEnergy += 10;
                     nextSquare.becomeVoid();
                 default:
                     break;
@@ -83,8 +91,8 @@ public class Character {
             this.y += dy;
             
             TranslateTransition translate = new TranslateTransition(Duration.millis(150), this.rendu);
-            translate.setToX(this.x*(Main.WindowHeight/10));
-            translate.setToY(this.y*(Main.WindowHeight/10));
+            translate.setToX(this.x*this.squareLength);
+            translate.setToY(this.y*this.squareLength);
             translate.play();
 
             this.afficherBoucle();
@@ -93,11 +101,10 @@ public class Character {
                 this.Dead();
             }
         }
-
     }
 
     public void afficher(AnchorPane root){
-        this.rendu = new Rectangle(this.x*(Main.WindowHeight/10)+(Main.WindowHeight/40), this.y*(Main.WindowHeight/10) + (Main.WindowHeight/40), (Main.WindowHeight/20), (Main.WindowHeight/20)); // taille à changer pour dynamic
+        this.rendu = new Rectangle(this.x*this.squareLength/2 + this.squareLength/4, this.y*this.squareLength/2 + this.squareLength/4, this.squareLength/2, this.squareLength/2); // taille à changer pour dynamic
         this.rendu.setFill(Color.BEIGE);
 
         root.getChildren().add(this.rendu);
@@ -114,48 +121,62 @@ public class Character {
                 for (int j = i; j < this.historiqueSquare.size(); j ++){
                     System.out.print("[" + this.historiqueSquare.get(j).getX() + "; " + this.historiqueSquare.get(j).getY() + "]" + " - ");
                 }
+                System.out.println();
                 break;
             }
         }
-        System.out.println();
     }
 
     public void Win(){
-        System.out.println("Victoire !");
+        int distance = 0;
+        for (int i = 0; i < this.historiqueSquare.size()-1; i++) {
+            distance += this.historiqueSquare.get(i).getDistance(this.historiqueSquare.get(i+1));
+        }
+        System.out.println("Victoire !\nDistance parcourue: " + distance + "\nEnergie restante: " + this.energy + "\nEnergie gagnée: " + this.EarnedEnergy + "\nEnergie perdue: " + this.LostEnergy);
+
+        System.out.print("Chemin parcouru: ");
+        for (Square square : this.historiqueSquare) {
+            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+        }
+        System.out.println();
+        //Afficher le meilleur chemin en terme d'energie
+        //Afficher le meilleur chemin en terme d'energie
     }
 
     public void Dead(){
         System.out.println("Perdu !");
     }
 
-    public void cancel(){
+    public void cancel(Label label){
         this.energy += 1;
-        Square old = this.historiqueSquare.get(this.historiqueSquare.size() -1);
-        switch (old.getSquareType()){
-            case 'O':
-                this.energy += 10;
-                this.historiqueSquare.remove(this.historiqueSquare.get(this.historiqueSquare.size() -2));
-                this.afficherBoucle();
-                return;
-            case 'V':
-                if (old.wasBonus){
-                    this.energy -= 10;
-                    old.cancelVoid();
-                }
-            default:
-                break;
-        }
-        this.x = this.historiqueSquare.get(this.historiqueSquare.size() -2).getX();
-        this.y = this.historiqueSquare.get(this.historiqueSquare.size() -2).getY();
+        this.LostEnergy +=1;
 
-        this.historiqueSquare.remove(old);
+        Square old = this.historiqueSquare.get(this.historiqueSquare.size() -2);
+        Square current = this.historiqueSquare.get(this.historiqueSquare.size() - 1);
+
+        if (old.getSquareType() == 'O'){
+            this.energy += 10;
+            this.LostEnergy += 10;
+            this.historiqueSquare.remove(old);
+            old = current;
+        } else if (current.getSquareType() == 'V'){
+            if (current.getWasBonnus()){
+                this.energy -= 10;
+                this.EarnedEnergy -= 10;
+                current.cancelVoid();
+            }
+        }
+        this.x = old.getX();
+        this.y = old.getY();
+
+        this.historiqueSquare.remove(current);
 
         TranslateTransition translate = new TranslateTransition(Duration.millis(400), this.rendu); // créer fonction pour actualiser la position du joueur
-        translate.setToX(this.x*(Main.WindowHeight/10));
-        translate.setToY(this.y*(Main.WindowHeight/10));
+        translate.setToX(this.x*squareLength);
+        translate.setToY(this.y*squareLength);
         translate.play();
 
-        System.out.println(this.historiqueSquare);
+        label.setText("Stamina : " + this.getEnergy());
     }
 
 }
