@@ -2,6 +2,10 @@ package game4j;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
-public class Game {
+public class Game implements Serializable{
     private int date;
     private int timeStart;
     private List<Square> squarelist = new ArrayList<Square>(); // Liste des cases
@@ -23,12 +27,13 @@ public class Game {
     private Square start;
     private Square finish;
     private AnchorPane pane;
-    private Character player;
+    private Player player;
     private int width;
     private int height;
     private float squareLength;
     private int startEnergy;
     private Label labelStamina;
+    private Boolean isFinished;
 
     public Game(AnchorPane root){
         this.pane = root;
@@ -78,7 +83,7 @@ public class Game {
         //lecture de la map (on pourrait demande à l'utilisateur laquelle il veut utiliser)
         loadMap("ressources/maps/test.map");
 
-        this.player = new Character(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
+        this.player = new Player(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
         this.labelStamina = new Label("Stamina : " + player.getEnergy()); //bouger label vers la classe Game
         AnchorPane.setRightAnchor(this.labelStamina, 100.0);
 
@@ -87,21 +92,30 @@ public class Game {
         this.pane.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle( KeyEvent event ) {
+                int resultat = 0;
                 switch(event.getCode()){ // ignorer le warning tout foncitonne
                     case UP:
-                        player.move(0, -1, squarelist, width, height);
+                        resultat = player.move(0, -1, squarelist, width, height);
                         break;
                     case DOWN:
-                        player.move(0, 1,  squarelist, width, height);
+                        resultat = player.move(0, 1,  squarelist, width, height);
                         break;
                     case RIGHT:
-                        player.move(1, 0,  squarelist, width, height);
+                        resultat = player.move(1, 0,  squarelist, width, height);
                         break;
                     case LEFT:
-                        player.move(-1, 0, squarelist, width, height);
+                        resultat = player.move(-1, 0, squarelist, width, height);
                         break;
                 }
                 event.consume();
+                if (resultat != 0){
+                    isFinished = true;
+                    if (resultat == 1){
+                        asWin();
+                    }
+                }
+
+                
                 
                 labelStamina.setText("Stamina : " + player.getEnergy()); // actualisation de la stamina
             }
@@ -131,8 +145,51 @@ public class Game {
             }
         });
 
+        Button saveButton = new Button();
+        saveButton.setText("Sauvegarder partie");
+        AnchorPane.setBottomAnchor(saveButton, 100.0);
+        AnchorPane.setRightAnchor(saveButton, 40.0);
+
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e){
+                saveGame();
+            }
+        });
+
         this.pane.requestFocus(); //empeche que le bouton cancel prenne le focus et dérange la prise d'input
 
-        this.pane.getChildren().add(cancelBtn);
+        this.pane.getChildren().addAll(cancelBtn, saveButton);
+    }
+
+    public void asWin(){
+        //fonction pour lancer la recherche de meilleur chemin quand le joueur à gagné la partie
+
+    }
+
+    public void saveGame(){
+        //fonction pour sauvegarder la map dans un fichier sous ressources/saves
+        //il faut stocker les infos des cases, du joueur et de la partie
+        try (FileOutputStream fos = new FileOutputStream("object.dat");
+            ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+
+            // write object to file
+            oos.writeObject(this);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public float getSquareWidth(){
+        return this.squareLength;
+    }
+
+    public int getGridHeight(){
+        return this.height;
+    }
+
+    public int getGridWidth(){
+        return this.width;
     }
 }

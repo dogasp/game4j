@@ -47,6 +47,10 @@ public class Square {
         return this.wasBonus;
     }
 
+    public int[] getDistanceList(){
+        return this.distances;
+    }
+
     public int getDistance(Square square2){
         int distance = -1;
         for (int i = 0; i < 4; i ++){

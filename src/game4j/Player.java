@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-public class Character {
+public class Player {
     private int energy;
     private int x;
     private int y;
@@ -21,7 +21,7 @@ public class Character {
     private int nbReturn; // nombre de retours en arrière (limite de 6)
     private List<Square> historiqueSquare = new ArrayList<Square>();
 
-    public Character(int energy, int x, int y, float squareLength){
+    public Player(int energy, int x, int y, float squareLength){
         this.x = x;
         this.y = y;
         this.energy = energy;
@@ -60,7 +60,8 @@ public class Character {
         return this.energy;
     }
 
-    public void move(int dx, int dy, List<Square> squarelist, int width, int height){
+    public int move(int dx, int dy, List<Square> squarelist, int width, int height){
+        //retourne 0 si la partie continue, -1 si le joueur à perdu et 1 si le joueur à gagné
         if ((this.x + dx) < width && (this.x + dx) > -1 && (this.y + dy) < height && (this.y + dy) > -1){
             Square nextSquare = squarelist.get((this.y+dy)*width + (this.x+dx));
             //int distance = this.historiqueSquare.get(this.historiqueSquare.size() - 1).getDistance(nextSquare);
@@ -78,7 +79,7 @@ public class Character {
                     this.LostEnergy += 10;
                     this.historiqueSquare.add(this.historiqueSquare.get(this.historiqueSquare.size() - 2));
                     this.afficherBoucle();
-                    return;
+                    return 1;
                 case 'B':
                     this.energy += 10;
                     this.EarnedEnergy += 10;
@@ -99,8 +100,10 @@ public class Character {
 
             if (this.energy <= 0){
                 this.Dead();
+                return -1;
             }
         }
+        return 0;
     }
 
     public void afficher(AnchorPane root){
@@ -149,7 +152,7 @@ public class Character {
 
     public void cancel(Label label){
         this.energy += 1;
-        this.LostEnergy +=1;
+        this.LostEnergy -=1;
 
         Square old = this.historiqueSquare.get(this.historiqueSquare.size() -2);
         Square current = this.historiqueSquare.get(this.historiqueSquare.size() - 1);
