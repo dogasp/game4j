@@ -164,7 +164,8 @@ public class Game implements Serializable{
 
     public void asWin(){
         //fonction pour lancer la recherche de meilleur chemin quand le joueur à gagné la partie
-
+        DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width);
+        algo.optimiserDistance(this.start, this.finish);
     }
 
     public void saveGame(){

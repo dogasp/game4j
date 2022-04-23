@@ -96,6 +96,10 @@ public class Player {
             translate.setToY(this.y*this.squareLength);
             translate.play();
 
+            if (nextSquare.getSquareType() == 'A'){
+                return 1; //évite de devoir actualiser le personnage
+            }
+
             this.afficherBoucle();
 
             if (this.energy <= 0){
@@ -142,8 +146,6 @@ public class Player {
             System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
         }
         System.out.println();
-        //Afficher le meilleur chemin en terme d'energie
-        //Afficher le meilleur chemin en terme d'energie
     }
 
     public void Dead(){

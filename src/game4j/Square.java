@@ -13,7 +13,7 @@ public class Square {
     private char squareType; // V pour vide, B pour Bonus, O pour Obstacle, A pour Arrivée
     private Rectangle rendu;
     private int gridWidth;
-    private int[] distances = new int[4];
+    private int[] distances = new int[4]; //up right down left
 
     public Square(int x, int y, float width, int id, int gridWidth, String type, String[] distances){
         this.x = x;
