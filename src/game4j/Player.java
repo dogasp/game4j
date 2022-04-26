@@ -183,7 +183,7 @@ public class Player {
 
     public void cancel(Label label){
         if (this.historiqueSquare.size() == 1){
-            this.nbReturn += 1;
+            this.nbReturn -= 1;
             return;
         }
         this.energy += 1;

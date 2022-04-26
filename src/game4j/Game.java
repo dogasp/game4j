@@ -35,6 +35,7 @@ public class Game {
     private float squareLength;
     private int startEnergy;
     private Label labelStamina;
+    private Label labelCancel;
 
     public Game(AnchorPane root){
         this.pane = root;
@@ -91,7 +92,11 @@ public class Game {
         this.labelStamina = new Label("Stamina : " + this.player.getEnergy()); //bouger label vers la classe Game
         AnchorPane.setRightAnchor(this.labelStamina, 100.0);
 
-        this.pane.getChildren().add(this.labelStamina);
+        this.labelCancel = new Label("Cancel chance : " + (6-this.player.getnbReturn()));
+        AnchorPane.setRightAnchor(this.labelCancel, 80.0);
+        AnchorPane.setTopAnchor(this.labelCancel, 20.0);
+
+        this.pane.getChildren().addAll(this.labelStamina, this.labelCancel);
 
         this.pane.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -136,8 +141,9 @@ public class Game {
             public void handle(ActionEvent event) {
                 if (player.getnbReturn() < 6){
                     player.setnbReturn(player.getnbReturn()+1);
+                    player.cancel(labelStamina);
                 }
-                player.cancel(labelStamina);
+                labelCancel.setText("Cancel chance : " + (6-player.getnbReturn()));
                 pane.requestFocus();
             }
         });
