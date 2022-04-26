@@ -1,5 +1,7 @@
 package game4j;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -18,21 +20,38 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         /*Interface de bienvenue, on peut afficher les rêgles du jeu / lancer une partie*/
 
-        Button btn = new Button();
-        btn.setText("Lancer Jeu");
-        AnchorPane.setTopAnchor(btn, 200.0);
-        AnchorPane.setLeftAnchor(btn, 280.0);
+        Button btnStart = new Button();
+        btnStart.setText("Lancer Jeu");
+        AnchorPane.setTopAnchor(btnStart, 200.0);
+        AnchorPane.setLeftAnchor(btnStart, 280.0);
         
 
         AnchorPane root = new AnchorPane();
-        root.getChildren().add(btn);
-        btn.setOnAction(new EventHandler<ActionEvent>() {
+        btnStart.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Lancement du jeu ...");
                 root.getChildren().clear();
                 Game game = new Game(root);
-                game.start();
+                game.loadMap("ressources/maps/test.map");;
+            }
+        });
+
+        Button btnLoad = new Button();
+        btnLoad.setText("Charger partie");
+        AnchorPane.setTopAnchor(btnLoad, 300.0);
+        AnchorPane.setLeftAnchor(btnLoad, 280.0);
+
+        btnLoad.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event){
+                //on regarde s'il y a une sauvegarde
+                File file = new File("ressources/saves/sauvegarde.dat");
+                if (file.exists()){
+                    Game game = new Game(root);
+                    game.loadGame();
+                    //file.delete();
+                }
             }
         });
 
@@ -42,7 +61,7 @@ public class Main extends Application {
         AnchorPane.setLeftAnchor(title, 180.0);
 
 
-        root.getChildren().add(title);
+        root.getChildren().addAll(btnStart, title, btnLoad);
 
         Scene scene = new Scene(root, windowWidth, WindowHeight);
 

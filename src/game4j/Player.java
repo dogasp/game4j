@@ -60,6 +60,30 @@ public class Player {
         return this.energy;
     }
 
+    public int getEarnedEnergy(){
+        return this.EarnedEnergy;
+    }
+
+    public void setEarnedEnergy(int n){
+        this.EarnedEnergy = n;
+    }
+
+    public int getLostEnergy(){
+        return this.LostEnergy;
+    }
+
+    public void setLostEnergy(int n){
+        this.LostEnergy = n;
+    }
+
+    public List<Square> getHistorySquare(){
+        return this.historiqueSquare;
+    }
+
+    public void setHistoriqueSquare(List<Square> list){
+        this.historiqueSquare = list;
+    }
+
     public int move(int dx, int dy, List<Square> squarelist, int width, int height){
         //retourne 0 si la partie continue, -1 si le joueur à perdu et 1 si le joueur à gagné
         if ((this.x + dx) < width && (this.x + dx) > -1 && (this.y + dy) < height && (this.y + dy) > -1){
@@ -79,7 +103,7 @@ public class Player {
                     this.LostEnergy += 10;
                     this.historiqueSquare.add(this.historiqueSquare.get(this.historiqueSquare.size() - 2));
                     this.afficherBoucle();
-                    return 1;
+                    return 0;
                 case 'B':
                     this.energy += 10;
                     this.EarnedEnergy += 10;
@@ -111,10 +135,15 @@ public class Player {
     }
 
     public void afficher(AnchorPane root){
-        this.rendu = new Rectangle(this.x*this.squareLength/2 + this.squareLength/4, this.y*this.squareLength/2 + this.squareLength/4, this.squareLength/2, this.squareLength/2); // taille à changer pour dynamic
+        this.rendu = new Rectangle(this.squareLength/4, this.squareLength/4, this.squareLength/2, this.squareLength/2); // taille à changer pour dynamic
         this.rendu.setFill(Color.BEIGE);
 
         root.getChildren().add(this.rendu);
+
+        TranslateTransition translate = new TranslateTransition(Duration.millis(150), this.rendu);
+        translate.setToX(this.x*this.squareLength);
+        translate.setToY(this.y*this.squareLength);
+        translate.play();
     }
 
     public void initHistory(Square square){
@@ -153,6 +182,10 @@ public class Player {
     }
 
     public void cancel(Label label){
+        if (this.historiqueSquare.size() == 1){
+            this.nbReturn += 1;
+            return;
+        }
         this.energy += 1;
         this.LostEnergy -=1;
 

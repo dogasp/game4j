@@ -1,9 +1,11 @@
 package game4j;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
-public class Game implements Serializable{
+public class Game {
     private int date;
     private int timeStart;
     private List<Square> squarelist = new ArrayList<Square>(); // Liste des cases
@@ -33,7 +35,6 @@ public class Game implements Serializable{
     private float squareLength;
     private int startEnergy;
     private Label labelStamina;
-    private Boolean isFinished;
 
     public Game(AnchorPane root){
         this.pane = root;
@@ -58,10 +59,10 @@ public class Game implements Serializable{
                     String tmp = myReader.nextLine();
                     String[] data = tmp.split(" ");
                     squarelist.add(new Square(j, i, this.squareLength, i*this.width+j, this.width, data[0], Arrays.copyOfRange(data, 1, 5)));
-                    if (tmp.charAt(j) == 'D'){
+                    if (tmp.charAt(0) == 'D'){
                         this.start = squarelist.get(j);
                     }
-                    else if (tmp.charAt(j) == 'A') {
+                    else if (tmp.charAt(0) == 'A') {
                         this.finish = squarelist.get(j);
                     }
                 }
@@ -77,14 +78,17 @@ public class Game implements Serializable{
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+        
+        //initialisation du joueur avec les infos récupérées
+        this.player = new Player(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
+        player.initHistory(this.start);
+        this.start();
     }
 
     public void start() {
         //lecture de la map (on pourrait demande à l'utilisateur laquelle il veut utiliser)
-        loadMap("ressources/maps/test.map");
 
-        this.player = new Player(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
-        this.labelStamina = new Label("Stamina : " + player.getEnergy()); //bouger label vers la classe Game
+        this.labelStamina = new Label("Stamina : " + this.player.getEnergy()); //bouger label vers la classe Game
         AnchorPane.setRightAnchor(this.labelStamina, 100.0);
 
         this.pane.getChildren().add(this.labelStamina);
@@ -108,11 +112,8 @@ public class Game implements Serializable{
                         break;
                 }
                 event.consume();
-                if (resultat != 0){
-                    isFinished = true;
-                    if (resultat == 1){
-                        asWin();
-                    }
+                if (resultat == 1){
+                    asWin();
                 }
 
                 
@@ -124,11 +125,7 @@ public class Game implements Serializable{
         for (Square square : squarelist) {
             square.afficher(this.pane);
         }
-
-        player.afficher(this.pane);
-
-        player.initHistory(this.start);
-
+        
         Button cancelBtn = new Button();
         cancelBtn.setText("Cancel move");
         AnchorPane.setBottomAnchor(cancelBtn, 50.0);
@@ -150,6 +147,8 @@ public class Game implements Serializable{
         AnchorPane.setBottomAnchor(saveButton, 100.0);
         AnchorPane.setRightAnchor(saveButton, 40.0);
 
+        this.player.afficher(pane);
+
         saveButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e){
@@ -166,20 +165,43 @@ public class Game implements Serializable{
         //fonction pour lancer la recherche de meilleur chemin quand le joueur à gagné la partie
         DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width);
         algo.optimiserDistance(this.start, this.finish);
+
+        MinMaxAlgo pathFinder = new MinMaxAlgo(this.start, this.width, this.height, this.startEnergy);
+        //pathFinder.findBestPathEnergy(this.squarelist);
     }
 
     public void saveGame(){
         //fonction pour sauvegarder la map dans un fichier sous ressources/saves
         //il faut stocker les infos des cases, du joueur et de la partie
-        try (FileOutputStream fos = new FileOutputStream("object.dat");
+        try (FileOutputStream fos = new FileOutputStream("ressources/saves/sauvegarde.dat");
             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 
             // write object to file
-            oos.writeObject(this);
+            Sauvegarde save = new Sauvegarde(this, this.squarelist, this.player);
+            oos.writeObject(save);
 
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void loadGame(){
+        //fonction pour charger une partie qui a été sauvegardée
+        try{
+            FileInputStream file = new FileInputStream("ressources/saves/sauvegarde.dat");
+            ObjectInputStream in = new ObjectInputStream(file);
+
+            //read object from file
+            Sauvegarde save = (Sauvegarde)in.readObject();
+            in.close();
+            file.close();
+            save.load(this);
+        }catch (IOException ex) { //gestion des exceptions
+            ex.printStackTrace();
+        }catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        this.start();
     }
 
     public float getSquareWidth(){
@@ -192,5 +214,54 @@ public class Game implements Serializable{
 
     public int getGridWidth(){
         return this.width;
+    }
+
+    public Square getStart(){
+        return this.start;
+    }
+
+    public Square getFinish(){
+        return this.finish;
+    }
+
+    public int getStartEnergy(){
+        return this.startEnergy;
+    }
+
+    public void setSquareLength(float n){
+        this.squareLength = n;
+    }
+
+    public void setGrid(int height, int width){
+        this.width = width;
+        this.height = height;
+    }
+
+    public void setSquareList(List<Square> listesquare){
+        this.squarelist = listesquare;
+    }
+
+    public void setStart(int id){
+        for (Square square : this.squarelist) {
+            if (square.getId() == id){
+                this.start = square;
+            }
+        }
+    }
+
+    public void setFinish(int id){
+        for (Square square : this.squarelist) {
+            if (square.getId() == id){
+                this.finish = square;
+            }
+        }
+    }
+
+    public void setStartEnergy(int n){
+        this.startEnergy = n;
+    }
+
+    public void setPlayer(Player player){
+        this.player = player;
     }
 }

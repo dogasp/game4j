@@ -27,6 +27,16 @@ public class Square {
         }
     }
 
+    public Square(int x, int y, float width, int id, int gridWidth, Character type, int[] distances){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.gridWidth = gridWidth;
+        this.id = id;
+        this.squareType = type;
+        this.distances = distances;
+    }
+
     public int getX(){
         return this.x;
     }
@@ -114,5 +124,4 @@ public class Square {
         this.rendu.setFill(Color.YELLOW);
         this.wasBonus = false;
     }
-
 }
