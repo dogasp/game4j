@@ -179,8 +179,8 @@ public class Game {
         DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width);
         algo.optimiserDistance(this.start, this.finish);
 
-        MinMaxAlgo pathFinder = new MinMaxAlgo(this.start, this.width, this.height, this.startEnergy);
-        //pathFinder.findBestPathEnergy(this.squarelist);
+        new EnergyAlgo(this.squarelist, this.startEnergy).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start);
+
     }
 
     public void saveGame(String location){
