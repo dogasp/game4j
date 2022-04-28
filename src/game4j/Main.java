@@ -110,7 +110,7 @@ public class Main extends Application {
 
                 Label desc = new Label();
                 desc.setText("Selectionnez un replay à lire");
-                AnchorPane.setTopAnchor(desc, 20.0);
+                AnchorPane.setTopAnchor(desc, 55.0);
                 AnchorPane.setLeftAnchor(desc, 50.0);
 
                 Button cancelBtn = new Button();
@@ -133,24 +133,34 @@ public class Main extends Application {
                 ComboBox<String> listReplay = new ComboBox<String>(FXCollections.observableArrayList(elt));
                 AnchorPane.setLeftAnchor(listReplay, 50.0);
                 AnchorPane.setTopAnchor(listReplay, 75.0);
+
+                Label speedLabel = new Label();
+                speedLabel.setText("Selectionnez une vitesse de lecture");
+                AnchorPane.setTopAnchor(speedLabel, 110.0);
+                AnchorPane.setLeftAnchor(speedLabel, 50.0);
+
+                String speedTitle[] = {"Slow", "Normal", "Quick"};
+                ComboBox<String> listSpeed = new ComboBox<String>(FXCollections.observableArrayList(speedTitle));
+                AnchorPane.setLeftAnchor(listSpeed, 50.0);
+                AnchorPane.setTopAnchor(listSpeed, 130.0);
                 
                 Button btnValidate = new Button();
                 btnValidate.setText("Valider");
                 AnchorPane.setLeftAnchor(btnValidate, 50.0);
-                AnchorPane.setTopAnchor(btnValidate, 100.0);
+                AnchorPane.setTopAnchor(btnValidate, 160.0);
 
                 btnValidate.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event){
                         if (!listReplay.getSelectionModel().isEmpty()){
                             replayPane.getChildren().clear();
-                            ReplayViewer replay = new ReplayViewer(listReplay.getValue(), replayPane, main);
+                            ReplayViewer replay = new ReplayViewer(listReplay.getValue(), replayPane, main, listSpeed.getValue());
                             replay.play();
                         }
                     }
                 });
                 
-                replayPane.getChildren().addAll(desc, cancelBtn, listReplay, btnValidate);
+                replayPane.getChildren().addAll(desc, cancelBtn, listReplay, btnValidate, listSpeed, speedLabel);
 
                 Scene replay = new Scene(replayPane, windowWidth, WindowHeight);
                 primaryStage.setScene(replay);

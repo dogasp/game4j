@@ -93,7 +93,7 @@ public class Game {
     public void start() {
         //lecture de la map (on pourrait demande à l'utilisateur laquelle il veut utiliser)
 
-        this.labelStamina = new Label("Stamina : " + this.player.getEnergy()); //bouger label vers la classe Game
+        this.labelStamina = new Label("Stamina : " + this.player.getEnergy());
         AnchorPane.setRightAnchor(this.labelStamina, 100.0);
 
         this.labelCancel = new Label("Cancel chance : " + (6-this.player.getnbReturn()));
@@ -130,8 +130,7 @@ public class Game {
                 }
 
                 
-                
-                labelStamina.setText("Stamina : " + player.getEnergy()); // actualisation de la stamina
+                updateStaminaLabel(player.getEnergy()); // actualisation de la stamina
             }
         }); 
 
@@ -280,9 +279,8 @@ public class Game {
     }
 
     public void resetInterface(){
-        this.labelStamina.setText("Stamina : " + this.startEnergy);
-        this.pane.getChildren().remove(this.cancelBtn);
-        this.pane.getChildren().remove(this.saveButton);
+        this.updateStaminaLabel(this.startEnergy);
+        this.pane.getChildren().removeAll(this.cancelBtn, this.saveButton, this.labelCancel);
 
         this.pane.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -290,5 +288,13 @@ public class Game {
 
             }
         });
+    }
+
+    public Player getPlayer(){
+        return this.player;
+    }
+
+    public void updateStaminaLabel(int n){
+        this.labelStamina.setText("Stamina : " + n);
     }
 }
