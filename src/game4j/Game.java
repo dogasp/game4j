@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +38,8 @@ public class Game {
     private int startEnergy;
     private Label labelStamina;
     private Label labelCancel;
+    private Button cancelBtn;
+    private Button saveButton;
 
     public Game(AnchorPane root){
         this.pane = root;
@@ -117,8 +121,12 @@ public class Game {
                         break;
                 }
                 event.consume();
-                if (resultat == 1){
-                    asWin();
+                if (resultat != 0){
+                    if (resultat == 1){
+                        asWin();
+                    }
+                    LocalDateTime now = LocalDateTime.now();
+                    saveGame("ressources/replay/" + DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").format(now)+".dat");
                 }
 
                 
@@ -131,12 +139,12 @@ public class Game {
             square.afficher(this.pane);
         }
         
-        Button cancelBtn = new Button();
-        cancelBtn.setText("Cancel move");
-        AnchorPane.setBottomAnchor(cancelBtn, 50.0);
-        AnchorPane.setRightAnchor(cancelBtn, 90.0);
+        this.cancelBtn = new Button();
+        this.cancelBtn.setText("Cancel move");
+        AnchorPane.setBottomAnchor(this.cancelBtn, 50.0);
+        AnchorPane.setRightAnchor(this.cancelBtn, 90.0);
 
-        cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
+        this.cancelBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if (player.getnbReturn() < 6){
@@ -148,17 +156,17 @@ public class Game {
             }
         });
 
-        Button saveButton = new Button();
+        this.saveButton = new Button();
         saveButton.setText("Sauvegarder partie");
-        AnchorPane.setBottomAnchor(saveButton, 100.0);
-        AnchorPane.setRightAnchor(saveButton, 40.0);
+        AnchorPane.setBottomAnchor(this.saveButton, 100.0);
+        AnchorPane.setRightAnchor(this.saveButton, 40.0);
 
         this.player.afficher(pane);
 
-        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+        this.saveButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e){
-                saveGame();
+                saveGame("ressources/saves/sauvegarde.dat");
             }
         });
 
@@ -176,10 +184,10 @@ public class Game {
         //pathFinder.findBestPathEnergy(this.squarelist);
     }
 
-    public void saveGame(){
+    public void saveGame(String location){
         //fonction pour sauvegarder la map dans un fichier sous ressources/saves
         //il faut stocker les infos des cases, du joueur et de la partie
-        try (FileOutputStream fos = new FileOutputStream("ressources/saves/sauvegarde.dat");
+        try (FileOutputStream fos = new FileOutputStream(location);
             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 
             // write object to file
@@ -191,10 +199,10 @@ public class Game {
         }
     }
 
-    public void loadGame(){
+    public void loadGame(String fileName){
         //fonction pour charger une partie qui a été sauvegardée
         try{
-            FileInputStream file = new FileInputStream("ressources/saves/sauvegarde.dat");
+            FileInputStream file = new FileInputStream(fileName);
             ObjectInputStream in = new ObjectInputStream(file);
 
             //read object from file
@@ -269,5 +277,18 @@ public class Game {
 
     public void setPlayer(Player player){
         this.player = player;
+    }
+
+    public void resetInterface(){
+        this.labelStamina.setText("Stamina : " + this.startEnergy);
+        this.pane.getChildren().remove(this.cancelBtn);
+        this.pane.getChildren().remove(this.saveButton);
+
+        this.pane.getScene().setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle( KeyEvent event ) {
+
+            }
+        });
     }
 }
