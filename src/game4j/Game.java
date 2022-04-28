@@ -179,8 +179,19 @@ public class Game {
         DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width);
         algo.optimiserDistance(this.start, this.finish);
 
-        new EnergyAlgo(this.squarelist, this.startEnergy).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start);
+        EnergyAlgo res = new EnergyAlgo(this.squarelist, this.startEnergy).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start);
 
+        if (res.getStamina() == -1){
+            System.out.println("Impossible de trouver un chemin");
+        }
+        else{
+
+            System.out.print("Chemin le plus optimal niveau energie: ");
+            for (Square square : res.getHist()) {
+                System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+            }
+            System.out.println("\nCela revient à " + res.getStamina() + " energies");
+        }
     }
 
     public void saveGame(String location){

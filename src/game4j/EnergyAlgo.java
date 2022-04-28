@@ -17,7 +17,7 @@ public class EnergyAlgo {
         this.stamina = stamina;
     }
 
-    public int findBestPathEnergy(List<Square> squareList, int width, int height, int startEnergy, Square start){
+    public EnergyAlgo findBestPathEnergy(List<Square> squareList, int width, int height, int startEnergy, Square start){
 
         //on ne peut pas avoir de trajet demandant une mana négative, sinon c'est que le chemin n'est pas possible
         List<Square> hist = new ArrayList<Square>();
@@ -25,20 +25,7 @@ public class EnergyAlgo {
         
         EnergyAlgo res = this.recursive(hist, squareList, startEnergy, width, height);
 
-        if (res.getStamina() == -1){
-            System.out.println("Impossible de trouver un chemin");
-            return 0;
-        }
-        else{
-
-            System.out.print("Chemin le plus optimal niveau energie: ");
-            for (Square square : res.getHist()) {
-                System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
-            }
-            System.out.println("\nCela revient à " + res.getStamina() + " energies");
-        }
-
-        return 1;
+        return res;
     }
 
     private EnergyAlgo recursive(List<Square> historique, List<Square> squareList, int energy, int gridWidth, int gridHeight){
