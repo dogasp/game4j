@@ -1,7 +1,6 @@
 package game4j;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,10 +10,12 @@ public class DijkstraAlgo {
     private List<Integer> idDone = new ArrayList<Integer>();
     private List<Square> squarelist= new ArrayList<Square>();
     private int gridWidth;
+    private int gridHeight;
 
-    public DijkstraAlgo(List<Square> squarelist, int width){
+    public DijkstraAlgo(List<Square> squarelist, int width, int height){
         this.squarelist = squarelist;
         this.gridWidth = width;
+        this.gridHeight = height;
 
         int length = squarelist.size();
         this.optilist = new int[length];
@@ -41,7 +42,7 @@ public class DijkstraAlgo {
             //parcours des cases acessibles depuis là où on est, on part du principe que les obstacles sont forcément négatif
             //à ajouter: check si on n'est pas hors bordure
 
-            if(distanceList[0] != -1){
+            if(selected.getY()-1 >= 0){
                 int id = (selected.getY()-1)*this.gridWidth+selected.getX(); //calcul de l'id correspondant à la case visée par le déplacement
                 if (this.squarelist.get(id).getSquareType() != 'O'){        // check si elle n'est pas un obstacle
                     if (actualDistance + distanceList[0] < this.optilist[id]){  //si le trajet est plus court, on l'enregistre
@@ -50,7 +51,7 @@ public class DijkstraAlgo {
                     }
                 }
             }
-            if(distanceList[1] != -1){
+            if(selected.getX()+1 < this.gridWidth){
                 int id = selected.getY()*this.gridWidth+selected.getX()+1;
                 if (this.squarelist.get(id).getSquareType() != 'O'){
                     if (actualDistance + distanceList[1] < this.optilist[id]){
@@ -59,7 +60,7 @@ public class DijkstraAlgo {
                     }
                 }
             }
-            if(distanceList[2] != -1){
+            if(selected.getY()+1 < this.gridHeight){
                 int id = (selected.getY()+1)*this.gridWidth+selected.getX();
                 if (this.squarelist.get(id).getSquareType() != 'O'){
                     if (actualDistance + distanceList[2] < this.optilist[id]){
@@ -68,7 +69,7 @@ public class DijkstraAlgo {
                     }
                 }
             }
-            if(distanceList[3] != -1){
+            if(selected.getX()-1 >= 0){
                 int id = selected.getY()*this.gridWidth+selected.getX()-1;
                 if (this.squarelist.get(id).getSquareType() != 'O'){
                     if (actualDistance + distanceList[3] < this.optilist[id]){

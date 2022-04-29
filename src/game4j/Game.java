@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 public class Game {
-    private int date;
-    private int timeStart;
     private List<Square> squarelist = new ArrayList<Square>(); // Liste des cases
     /*private List<Food> foodList = new ArrayList<Food>(); // liste des cases avec de la nourriture
     private List<Obstacle> obstableList = new ArrayList<Obstacle>();*/
@@ -63,15 +60,14 @@ public class Game {
                 for (int j = 0; j < this.width; j ++){
                     String tmp = myReader.nextLine();
                     String[] data = tmp.split(" ");
-                    squarelist.add(new Square(j, i, this.squareLength, i*this.width+j, this.width, data[0], Arrays.copyOfRange(data, 1, 5)));
+                    this.squarelist.add(new Square(j, i, this.squareLength, i*this.width+j, this.width, data[0], Arrays.copyOfRange(data, 1, 5)));
                     if (tmp.charAt(0) == 'D'){
                         this.start = squarelist.get(j);
                     }
                     else if (tmp.charAt(0) == 'A') {
-                        this.finish = squarelist.get(j);
+                        this.finish = this.squarelist.get(j);
                     }
                 }
-                squarelist.get(0).getX();
             }
             while (myReader.hasNextLine()) {
               String data = myReader.nextLine();
@@ -87,6 +83,22 @@ public class Game {
         //initialisation du joueur avec les infos récupérées
         this.player = new Player(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
         player.initHistory(this.start);
+        this.start();
+    }
+
+    public void gameFromGen(Generator generator){
+        this.width = generator.getWidth();
+        this.height = generator.getHeight();
+        this.startEnergy = generator.getStartEnergy();
+        this.squarelist = generator.getSquareList();
+        this.start = generator.getStart();
+        this.finish = generator.getFinish();
+
+        this.squareLength = Main.WindowHeight/this.width;
+
+        this.player = new Player(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
+        player.initHistory(this.start);
+
         this.start();
     }
 
@@ -118,6 +130,8 @@ public class Game {
                         break;
                     case LEFT:
                         resultat = player.move(-1, 0, squarelist, width, height);
+                        break;
+                    default:
                         break;
                 }
                 event.consume();
@@ -176,22 +190,16 @@ public class Game {
 
     public void asWin(){
         //fonction pour lancer la recherche de meilleur chemin quand le joueur à gagné la partie
-        DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width);
+        DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width, this.height);
         algo.optimiserDistance(this.start, this.finish);
 
-        EnergyAlgo res = new EnergyAlgo(this.squarelist, this.startEnergy).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start);
+        EnergyAlgo res = new EnergyAlgo(this.squarelist, this.startEnergy).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start, true);
 
-        if (res.getStamina() == -1){
-            System.out.println("Impossible de trouver un chemin");
+        System.out.print("Chemin le plus optimal niveau energie: ");
+        for (Square square : res.getHist()) {
+            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
         }
-        else{
-
-            System.out.print("Chemin le plus optimal niveau energie: ");
-            for (Square square : res.getHist()) {
-                System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
-            }
-            System.out.println("\nCela revient à " + res.getStamina() + " energies");
-        }
+        System.out.println("\nCela revient à " + res.getStamina() + " energies");
     }
 
     public void saveGame(String location){

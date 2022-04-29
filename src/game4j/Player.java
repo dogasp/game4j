@@ -3,8 +3,6 @@ package game4j;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.css.Rect;
-
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;

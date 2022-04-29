@@ -49,6 +49,10 @@ public class Square {
         return this.squareType;
     }
 
+    public void setType(char type){
+        this.squareType = type;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -64,29 +68,27 @@ public class Square {
     public int getDistance(Square square2){
         int distance = -1;
         for (int i = 0; i < 4; i ++){
-            if (this.distances[i] != -1){
-                switch (i){
-                    case 0:
-                        if ((this.x == square2.getX()) && (this.y-1 == square2.getY())){
-                            distance = this.distances[i];
-                        }
-                        break;
-                    case 1:
-                        if ((this.x+1 == square2.getX()) && (this.y == square2.getY())){
-                            distance = this.distances[i];
-                        }
-                        break;
-                    case 2:
-                        if ((this.x == square2.getX()) && (this.y+1 == square2.getY())){
-                            distance = this.distances[i];
-                        }
-                        break;
-                    default:
-                        if ((this.x-1 == square2.getX()) && (this.y == square2.getY())){
-                            distance = this.distances[i];
-                        }
-                        break;
-                }
+            switch (i){
+                case 0:
+                    if ((this.x == square2.getX()) && (this.y-1 == square2.getY())){
+                        distance = this.distances[i];
+                    }
+                    break;
+                case 1:
+                    if ((this.x+1 == square2.getX()) && (this.y == square2.getY())){
+                        distance = this.distances[i];
+                    }
+                    break;
+                case 2:
+                    if ((this.x == square2.getX()) && (this.y+1 == square2.getY())){
+                        distance = this.distances[i];
+                    }
+                    break;
+                default:
+                    if ((this.x-1 == square2.getX()) && (this.y == square2.getY())){
+                        distance = this.distances[i];
+                    }
+                    break;
             }
         }
         return distance;

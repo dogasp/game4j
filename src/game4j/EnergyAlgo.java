@@ -1,10 +1,7 @@
 package game4j;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class EnergyAlgo {
@@ -17,23 +14,23 @@ public class EnergyAlgo {
         this.stamina = stamina;
     }
 
-    public EnergyAlgo findBestPathEnergy(List<Square> squareList, int width, int height, int startEnergy, Square start){
+    public EnergyAlgo findBestPathEnergy(List<Square> squareList, int width, int height, int startEnergy, Square start, Boolean optiEnergy){
 
         //on ne peut pas avoir de trajet demandant une mana négative, sinon c'est que le chemin n'est pas possible
         List<Square> hist = new ArrayList<Square>();
         hist.add(start);
         
-        EnergyAlgo res = this.recursive(hist, squareList, startEnergy, width, height);
+        EnergyAlgo res = this.recursive(hist, squareList, startEnergy, width, height, optiEnergy);
 
         return res;
     }
 
-    private EnergyAlgo recursive(List<Square> historique, List<Square> squareList, int energy, int gridWidth, int gridHeight){
-        for (Square square : historique) {
-            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+    private EnergyAlgo recursive(List<Square> historique, List<Square> squareList, int energy, int gridWidth, int gridHeight, Boolean optiEnergy){
+        EnergyAlgo best = new EnergyAlgo(null, -1000000000);
+
+        if (optiEnergy && energy < 0){
+            return best;
         }
-        System.out.println(" >>" + energy);
-        EnergyAlgo best = new EnergyAlgo(null, -1);
 
         int delta = 0;
 
@@ -68,9 +65,9 @@ public class EnergyAlgo {
             if (!isIn){
                 List<Square> tmphist = historique.stream().collect(Collectors.toList());
                 tmphist.add(toTest);
-                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight);
+                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight, optiEnergy);
 
-                if (tmp.getStamina() > -1){
+                if (tmp.getStamina() > best.getStamina()){
                     best.setStamina(tmp.getStamina());
                     best.setHistory(tmp.getHist());
                 }
@@ -90,7 +87,7 @@ public class EnergyAlgo {
             if (!isIn){
                 List<Square> tmphist = historique.stream().collect(Collectors.toList());
                 tmphist.add(toTest);
-                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight);
+                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight, optiEnergy);
 
                 if (tmp.getStamina() > best.getStamina()){
                     best.setStamina(tmp.getStamina());
@@ -112,7 +109,7 @@ public class EnergyAlgo {
             if (!isIn){
                 List<Square> tmphist = historique.stream().collect(Collectors.toList());
                 tmphist.add(toTest);
-                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight);
+                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight, optiEnergy);
 
                 if (tmp.getStamina() > best.getStamina()){
                     best.setStamina(tmp.getStamina());
@@ -134,7 +131,7 @@ public class EnergyAlgo {
             if (!isIn){
                 List<Square> tmphist = historique.stream().collect(Collectors.toList());
                 tmphist.add(toTest);
-                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight);
+                EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight, optiEnergy);
 
                 if (tmp.stamina > best.getStamina()){
                     best.setStamina(tmp.stamina);
