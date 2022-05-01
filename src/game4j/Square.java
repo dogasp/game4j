@@ -1,8 +1,12 @@
 package game4j;
 
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+
+
 
 public class Square {
     private int x;
@@ -96,26 +100,32 @@ public class Square {
         this.rendu = new Rectangle(this.x*this.width, this.y*this.width, this.width, this.width);
         switch (this.squareType){
             case 'V':
-                this.rendu.setFill(Color.GRAY);
+                Image img = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/grass.png");
+                this.rendu.setFill(new ImagePattern(img));
                 break;
             case 'D':
-                this.rendu.setFill(Color.BLUEVIOLET);
+                Image img1 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/depart.png");
+                this.rendu.setFill(new ImagePattern(img1));
                 break;
             case 'A':
-                this.rendu.setFill(Color.RED);
+                Image img2 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/house.png");
+                this.rendu.setFill(new ImagePattern(img2));;
                 break;
             case 'O':
-                this.rendu.setFill(Color.GREEN);
+                Image img3 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/tree.png");
+                this.rendu.setFill(new ImagePattern(img3));
                 break;
             case 'B':
-                this.rendu.setFill(Color.YELLOW);
+                Image img4 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/bonus.png");
+                this.rendu.setFill(new ImagePattern(img4));
         }
         root.getChildren().add(this.rendu);
     }
 
     public void becomeVoid(){
         this.squareType = 'V';
-        this.rendu.setFill(Color.GRAY);
+        Image img = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/grass.png");
+        this.rendu.setFill(new ImagePattern(img));
         this.wasBonus = true;
     }
 

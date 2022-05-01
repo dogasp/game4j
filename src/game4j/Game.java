@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+
+
 
 public class Game {
     private int date;
@@ -40,10 +41,13 @@ public class Game {
     private Label labelCancel;
     private Button cancelBtn;
     private Button saveButton;
+    public Object KeyEvent;
 
     public Game(AnchorPane root){
         this.pane = root;
     }
+
+
 
     public void loadMap(String file){
         try {
@@ -108,16 +112,16 @@ public class Game {
                 int resultat = 0;
                 switch(event.getCode()){ // ignorer le warning tout foncitonne
                     case UP:
-                        resultat = player.move(0, -1, squarelist, width, height);
+                        resultat = player.move(0, -1, squarelist, width, height, "UP");
                         break;
                     case DOWN:
-                        resultat = player.move(0, 1,  squarelist, width, height);
+                        resultat = player.move(0, 1,  squarelist, width, height, "DOWN");
                         break;
                     case RIGHT:
-                        resultat = player.move(1, 0,  squarelist, width, height);
+                        resultat = player.move(1, 0,  squarelist, width, height, "RIGHT");
                         break;
                     case LEFT:
-                        resultat = player.move(-1, 0, squarelist, width, height);
+                        resultat = player.move(-1, 0, squarelist, width, height, "LEFT");
                         break;
                 }
                 event.consume();
