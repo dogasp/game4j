@@ -20,8 +20,9 @@ public class Generator {
 
         Random r = new Random();
         
-        //100 essais pour trouver une configuration qui marche
-        for (int i = 0; i < 100; i++){
+        //20 essais pour trouver une configuration qui marche
+        for (int i = 0; i < 20; i++){
+            System.out.println("Époche: " + i);
             this.ListSquare = new ArrayList<Square>();
             //création de chaque Square
             for (int j = 0; j < width*height; j ++){
@@ -55,23 +56,44 @@ public class Generator {
             this.startEnergy = r.nextInt(width);
 
             //boucler pour trouver stamina opti
-            EnergyAlgo path = new EnergyAlgo(null, 0).findBestPathEnergy(this.ListSquare, width, height, this.startEnergy, this.start, energy);
-            if (path.getStamina() != -1000000000 && (energy && (path.getStamina() > 0))){ //si le chemin est possible et correspond aux attentes du joueur
+            DijkstraAlgo path = new DijkstraAlgo(this.ListSquare, this.width, this.height).optimiserDistance(this.start, this.finish, true);
+            if (path.getValue() > -1){ //si le chemin est possible
+                int minStamina = getMinStamina(path.getPath());
                 //la difficulté définit la marge en energie qu'on a pour résoudre le problème
                 if (difficulty == "Easy"){
-                    this.startEnergy = (int)(path.getStamina()*1.5);
+                    this.startEnergy = (int)(minStamina*1.5);
                 }
                 else if (difficulty == "Medium"){
-                    this.startEnergy = (int)(path.getStamina()*1.2);
+                    this.startEnergy = (int)(minStamina*1.2);
                 }
                 else{
-                    this.startEnergy = path.getStamina();
+                    this.startEnergy = minStamina;
                 }
                 return true;
             }
 
         }
         return false;
+    }
+
+    private int getMinStamina(List<Square> hist){
+        int accumulated = 0;
+        int needed = 0;
+        for (Square square : hist) {
+            if (square.getSquareType() != 'D'){
+                if (accumulated > 0){
+                    accumulated -= 1;
+                } else{
+                    needed += 1;
+                }
+                if (square.getSquareType() == 'B'){
+
+                    accumulated += 10;
+                }
+            }
+        }
+
+        return needed;
     }
 
     public int getWidth(){

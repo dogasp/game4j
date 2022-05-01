@@ -49,7 +49,7 @@ public class Game {
             String line = myReader.nextLine();
             this.width = Integer.parseInt(line);
 
-            this.squareLength = Main.WindowHeight/this.width;
+            this.squareLength = Main.WindowHeight/(this.width>this.height?this.width:this.height);
             line = myReader.nextLine();
             this.height = Integer.parseInt(line);
 
@@ -94,7 +94,7 @@ public class Game {
         this.start = generator.getStart();
         this.finish = generator.getFinish();
 
-        this.squareLength = Main.WindowHeight/this.width;
+        this.squareLength = Main.WindowHeight/(this.width>this.height?this.width:this.height);
 
         this.player = new Player(this.startEnergy, this.start.getX(), this.start.getY(), this.squareLength);
         player.initHistory(this.start);
@@ -190,16 +190,43 @@ public class Game {
 
     public void asWin(){
         //fonction pour lancer la recherche de meilleur chemin quand le joueur à gagné la partie
-        DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width, this.height);
-        algo.optimiserDistance(this.start, this.finish);
+        DijkstraAlgo bestDist = new DijkstraAlgo(this.squarelist, this.width, this.height).optimiserDistance(this.start, this.finish, false);
+
+        System.out.print("Chemin le plus optimal niveau distance: ");
+        for (Square square : bestDist.getPath()) {
+            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+        }
+        System.out.println("\nCela revient à parcourir " + bestDist.getValue());
+
+        //meilleure energie avec algo de dijkstra
+
+        DijkstraAlgo bestEnergy = new DijkstraAlgo(this.squarelist, this.width, this.height).optimiserDistance(this.start, this.finish, true);
+        bestEnergy.calcEnergy(this.startEnergy);
+
+        System.out.print(" - Chemin le plus optimal niveau energie (Dijkstra): ");
+        for (Square square : bestEnergy.getPath()) {
+            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+        }
+        System.out.println("\nCela revient à " + bestEnergy.getValue() + " energies");
+
+        // meilleure energie avec parcours graphe
 
         EnergyAlgo res = (new EnergyAlgo(null, 0)).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start, true);
 
-        System.out.print("Chemin le plus optimal niveau energie: ");
+        System.out.print(" - Chemin le plus optimal niveau energie (parcours graphe): ");
         for (Square square : res.getHist()) {
             System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
         }
         System.out.println("\nCela revient à " + res.getStamina() + " energies");
+
+        //meilleure energie avec bellmanford
+
+        /*DijkstraAlgo resBellmanF = new DijkstraAlgo(this.squarelist, this.width, this.height).bellmanFord(this.start, this.finish, this.startEnergy);
+        System.out.print(" - Chemin le plus optimal niveau energie (bellman Ford): ");
+        for (Square square : resBellmanF.getPath()) {
+            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+        }
+        System.out.println("\nCela revient à " + resBellmanF.getValue() + " energies");*/
     }
 
     public void saveGame(String location){

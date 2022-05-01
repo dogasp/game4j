@@ -28,9 +28,9 @@ public class EnergyAlgo {
     private EnergyAlgo recursive(List<Square> historique, List<Square> squareList, int energy, int gridWidth, int gridHeight, Boolean optiEnergy){
         EnergyAlgo best = new EnergyAlgo(null, -1000000000);
 
-        if (optiEnergy && energy < 0){
+        /*if (optiEnergy && energy < 0){
             return best;
-        }
+        }*/
 
         int delta = 0;
 
@@ -48,7 +48,11 @@ public class EnergyAlgo {
             case 'D':
                 break;
             default:
-                delta = -1;
+                if (lastSquare.getWasBonnus()){
+                    delta = 9;
+                }else{
+                    delta = -1;
+                }
         }
 
         if (lastSquare.getX()+1 < gridWidth){

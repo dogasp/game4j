@@ -12,6 +12,9 @@ public class DijkstraAlgo {
     private int gridWidth;
     private int gridHeight;
 
+    private int value;
+    private List<Square> path;
+
     public DijkstraAlgo(List<Square> squarelist, int width, int height){
         this.squarelist = squarelist;
         this.gridWidth = width;
@@ -27,7 +30,7 @@ public class DijkstraAlgo {
     }
 
     //fonction pour trouver le chemin le plus court en distance pour atteindre l'arrivée
-    public void optimiserDistance(Square start, Square end){
+    public DijkstraAlgo optimiserDistance(Square start, Square end, Boolean energy){
         this.optilist[start.getId()] = 0; //initialisation avec le départ
         this.idList[start.getId()] = -1;
 
@@ -45,43 +48,75 @@ public class DijkstraAlgo {
             if(selected.getY()-1 >= 0){
                 int id = (selected.getY()-1)*this.gridWidth+selected.getX(); //calcul de l'id correspondant à la case visée par le déplacement
                 if (this.squarelist.get(id).getSquareType() != 'O'){        // check si elle n'est pas un obstacle
-                    if (actualDistance + distanceList[0] < this.optilist[id]){  //si le trajet est plus court, on l'enregistre
+                    if (!energy && actualDistance + distanceList[0] < this.optilist[id]){  //si le trajet est plus court, on l'enregistre
                         this.optilist[id] = actualDistance + distanceList[0];
                         this.idList[id] = selected.getId();
+                    }
+                    if (energy){ //si on a choisis de faire la distance par rapport à l'energie
+                        int delta = getDelta(this.squarelist.get(id)); // on récupère la valeur du déplacement (11 si vide et 1 si bonus)
+                        
+                        if (actualDistance + delta < this.optilist[id]){ //si le trajet est plus court, on l'enregistre
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = selected.getId();
+                        }
                     }
                 }
             }
             if(selected.getX()+1 < this.gridWidth){
                 int id = selected.getY()*this.gridWidth+selected.getX()+1;
                 if (this.squarelist.get(id).getSquareType() != 'O'){
-                    if (actualDistance + distanceList[1] < this.optilist[id]){
+                    if (!energy && actualDistance + distanceList[1] < this.optilist[id]){
                         this.optilist[id] = actualDistance + distanceList[1];
                         this.idList[id] = selected.getId();
+                    }
+                    if (energy){
+                        int delta = getDelta(this.squarelist.get(id));
+                        
+                        if (actualDistance + delta < this.optilist[id]){
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = selected.getId();
+                        }
                     }
                 }
             }
             if(selected.getY()+1 < this.gridHeight){
                 int id = (selected.getY()+1)*this.gridWidth+selected.getX();
                 if (this.squarelist.get(id).getSquareType() != 'O'){
-                    if (actualDistance + distanceList[2] < this.optilist[id]){
+                    if (!energy && actualDistance + distanceList[2] < this.optilist[id]){
                         this.optilist[id] = actualDistance + distanceList[2];
                         this.idList[id] = selected.getId();
+                    }
+                    if (energy){
+                        int delta = getDelta(this.squarelist.get(id));
+                        
+                        if (actualDistance + delta < this.optilist[id]){
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = selected.getId();
+                        }
                     }
                 }
             }
             if(selected.getX()-1 >= 0){
                 int id = selected.getY()*this.gridWidth+selected.getX()-1;
                 if (this.squarelist.get(id).getSquareType() != 'O'){
-                    if (actualDistance + distanceList[3] < this.optilist[id]){
+                    if (!energy && actualDistance + distanceList[3] < this.optilist[id]){
                         this.optilist[id] = actualDistance + distanceList[3];
                         this.idList[id] = selected.getId();
+                    }
+                    if (energy){
+                        int delta = getDelta(this.squarelist.get(id));
+                        
+                        if (actualDistance + delta < this.optilist[id]){
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = selected.getId();
+                        }
                     }
                 }
             }
 
             //selection de la prochaine node (la plus petite distance qui n'as pas été calculée)
 
-            int minId = 0;
+            int minId = -1;
             int minVal = 10000;
             for (int i = 0; i < this.squarelist.size(); i++){
                 if (!this.idDone.contains(i) && this.optilist[i] < minVal){
@@ -90,13 +125,17 @@ public class DijkstraAlgo {
                 }
             }
 
+            if (minId == -1){
+                this.value = -1; //pour casser la boucle s'il n'y a pas de chemin possible
+                return this;
+            }
             selected = this.squarelist.get(minId);
             actualDistance = minVal;
         }
 
         this.idDone.add(selected.getId()); // ajout de l'arrivée
 
-        //rembobiner boucle infinie
+        //rembobiner boucle
         List<Square> result = new ArrayList<Square>();
         int id = selected.getId();
         result.add(selected);
@@ -105,12 +144,150 @@ public class DijkstraAlgo {
             result.add(this.squarelist.get(id));
         }
         Collections.reverse(result);
-        
-        System.out.print("Chemin le plus optimal niveau distance: ");
-        for (Square square : result) {
-            System.out.print(" -> [" + square.getX() + "; " + square.getY() + "]");
+
+        this.value = this.optilist[selected.getId()];
+        this.path = result;
+
+        return this;
+    }
+
+    public DijkstraAlgo bellmanFord(Square start, Square end, int startEnergy){
+        this.optilist[start.getId()] = -startEnergy; //initialisation avec le départ
+        this.idList[start.getId()] = -1;
+
+        for (int i = 0; i < this.squarelist.size()-1; i ++){
+            Boolean haveChanged = false;
+
+            for (int j = 0; j < this.squarelist.size(); j++) {
+                int actualDistance = this.optilist[j];
+                Square selected = this.squarelist.get(j);
+                if (selected.getSquareType() == 'O'){
+                    continue;
+                }
+
+                if(selected.getY()-1 >= 0){
+                    int id = (selected.getY()-1)*this.gridWidth+selected.getX(); //calcul de l'id correspondant à la case visée par le déplacement
+                    if (this.squarelist.get(id).getSquareType() != 'O'){        // check si elle n'est pas un obstacle
+                        int delta = getDeltaNegative(this.squarelist.get(id)); // on récupère la valeur du déplacement (+1 si vide et -9 si bonus, c'est inversé)
+                        
+                        if (actualDistance + delta < this.optilist[id]){ //si le trajet est plus court, on l'enregistre
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = j;
+                            haveChanged = true;
+                        }
+                    }
+                }
+                if(selected.getX()+1 < this.gridWidth){
+                    int id = selected.getY()*this.gridWidth+selected.getX()+1;
+                    if (this.squarelist.get(id).getSquareType() != 'O'){
+                        int delta = getDeltaNegative(this.squarelist.get(id));
+                        
+                        if (actualDistance + delta < this.optilist[id]){
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = j;
+                            haveChanged = true;
+                        }
+                    }
+                }
+                if(selected.getY()+1 < this.gridHeight){
+                    int id = (selected.getY()+1)*this.gridWidth+selected.getX();
+                    if (this.squarelist.get(id).getSquareType() != 'O'){
+                        int delta = getDelta(this.squarelist.get(id));
+                        
+                        if (actualDistance + delta < this.optilist[id]){
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = j;
+                            haveChanged = true;
+                        }
+                    }
+                }
+                if(selected.getX()-1 >= 0){
+                    int id = selected.getY()*this.gridWidth+selected.getX()-1;
+                    if (this.squarelist.get(id).getSquareType() != 'O'){
+                        int delta = getDelta(this.squarelist.get(id));
+                        
+                        if (actualDistance + delta < this.optilist[id]){
+                            this.optilist[id] = actualDistance + delta;
+                            this.idList[id] = j;
+                            haveChanged = true;
+                        }
+                    }
+                }
+            }
+
+            if (!haveChanged){
+                break;
+            }
         }
-        System.out.println("\nCela revient à parcourir " + this.optilist[selected.getId()]);
+
+        List<Square> result = new ArrayList<Square>();
+        int id = end.getId();
+        while (id != start.getId()){
+            id = this.idList[id];
+            result.add(this.squarelist.get(id));
+        }
+        Collections.reverse(result);
+
+        this.value = -this.optilist[end.getId()];
+        this.path = result;
+
+        return this;
+    }
+
+    public int getValue(){
+        return this.value;
+    }
+
+    public List<Square> getPath(){
+        return this.path;
+    }
+
+    private int getDelta(Square square){
+        switch (square.getSquareType()){
+            case 'V':
+                if(square.getWasBonnus()){
+                    return 1;
+                }else{
+                    return 100;
+                }
+            case 'B':
+                return 1;
+            case 'A':
+                return 100;
+            default:
+                return 0;
+        }
+    }
+
+    private int getDeltaNegative(Square square){
+        switch (square.getSquareType()){
+            case 'V':
+                if(square.getWasBonnus()){
+                    return -9;
+                }else{
+                    return 1;
+                }
+            case 'B':
+                return -9;
+            case 'A':
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
+    public void calcEnergy(int startEnergy){
+        int energy = startEnergy;
+        for (Square square : this.path) {
+            if (square.getSquareType() != 'D'){
+                if (square.getSquareType() == 'B' || square.getWasBonnus()){
+                    energy += 9;
+                }else{
+                    energy -= 1;
+                }
+            }
+        }
+        this.value = energy;
     }
 
 }

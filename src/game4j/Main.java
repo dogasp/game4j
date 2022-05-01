@@ -20,13 +20,16 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
+//Classe principale gérant le menu
 public class Main extends Application {
 
-    public static int windowWidth = 800;
+    public static int windowWidth = 800; //défninition de la taille de la fenètre
     public static int WindowHeight = 600;
 
     private Scene scene;
@@ -62,6 +65,7 @@ public class Main extends Application {
         btnLoad.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event){
+                root.getChildren().clear();
                 Game game = new Game(root);
                 game.loadGame("ressources/saves/sauvegarde.dat");
             }
@@ -144,11 +148,16 @@ public class Main extends Application {
                 AnchorPane.setTopAnchor(widthLabel, 80.0);
                 AnchorPane.setLeftAnchor(widthLabel, 50.0);
 
-                //spinner pour entrer la valeur de la largeur
+                //input pour entrer la valeur de la largeur
 
-                Spinner<Integer> widthSpinner = new Spinner<>(2, 20, 10);
-                AnchorPane.setTopAnchor(widthSpinner, 80.0);
-                AnchorPane.setLeftAnchor(widthSpinner, 210.0);
+                TextField widthText = new TextField("6");
+                widthText.setAccessibleText("6");
+                widthText.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue.matches("\\d*")) return;
+                    widthText.setAccessibleText(newValue.replaceAll("[^\\d]", ""));
+                });
+                AnchorPane.setTopAnchor(widthText, 80.0);
+                AnchorPane.setLeftAnchor(widthText, 210.0);
 
                 //label pour la hauteur
 
@@ -157,11 +166,16 @@ public class Main extends Application {
                 AnchorPane.setTopAnchor(heightLabel, 110.0);
                 AnchorPane.setLeftAnchor(heightLabel, 50.0);
 
-                //spinner pour entrer la valeur de la hauteur
+                //input pour entrer la valeur de la hauteur
 
-                Spinner<Integer> heightSpinner = new Spinner<>(2, 20, 10);
-                AnchorPane.setTopAnchor(heightSpinner, 110.0);
-                AnchorPane.setLeftAnchor(heightSpinner, 210.0);
+                TextField heightText = new TextField("6");
+                heightText.setAccessibleText("6");
+                heightText.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue.matches("\\d*")) return;
+                    heightText.setAccessibleText(newValue.replaceAll("[^\\d]", ""));
+                });
+                AnchorPane.setTopAnchor(heightText, 110.0);
+                AnchorPane.setLeftAnchor(heightText, 210.0);
 
                 //label pour la difficulté
 
@@ -186,9 +200,14 @@ public class Main extends Application {
 
                 //entrée du nombre d'obstacle
 
-                Spinner<Integer> obstacleSpinner = new Spinner<>(0, 1000, 1);
-                AnchorPane.setTopAnchor(obstacleSpinner, 170.0);
-                AnchorPane.setLeftAnchor(obstacleSpinner, 210.0);
+                TextField obstacleText = new TextField("4");
+                obstacleText.setAccessibleText("4");
+                obstacleText.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue.matches("\\d*")) return;
+                    obstacleText.setAccessibleText(newValue.replaceAll("[^\\d]", ""));
+                });
+                AnchorPane.setTopAnchor(obstacleText, 170.0);
+                AnchorPane.setLeftAnchor(obstacleText, 210.0);
 
                 //label entrée du nombre de bonnus
 
@@ -199,9 +218,14 @@ public class Main extends Application {
 
                 //entrée du nombre de bonnus
 
-                Spinner<Integer> bonnusSpinner = new Spinner<>(0, 1000, 2);
-                AnchorPane.setTopAnchor(bonnusSpinner, 200.0);
-                AnchorPane.setLeftAnchor(bonnusSpinner, 210.0);
+                TextField bonusText = new TextField("2");
+                bonusText.setAccessibleText("2");
+                bonusText.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue.matches("\\d*")) return;
+                    bonusText.setAccessibleText(newValue.replaceAll("[^\\d]", ""));
+                });
+                AnchorPane.setTopAnchor(bonusText, 200.0);
+                AnchorPane.setLeftAnchor(bonusText, 210.0);
 
                 //label si on prend en compte l'energie
 
@@ -230,7 +254,9 @@ public class Main extends Application {
                     public void handle(ActionEvent event){
                         if (!listDiff.getSelectionModel().isEmpty()){ //check que tout est remplis
                             Generator generateur = new Generator();
-                            if (generateur.generate(listDiff.getValue(), widthSpinner.getValue(), heightSpinner.getValue(), obstacleSpinner.getValue(), bonnusSpinner.getValue(), energycb.isSelected())){
+                            if (generateur.generate(listDiff.getValue(), Integer.valueOf(widthText.getAccessibleText()), Integer.valueOf(heightText.getAccessibleText()), 
+                                    Integer.valueOf(obstacleText.getAccessibleText()), Integer.valueOf(bonusText.getAccessibleText()), energycb.isSelected())){
+
                                 generatePane.getChildren().clear();
                                 Game game = new Game(generatePane);
                                 game.gameFromGen(generateur);
@@ -255,8 +281,8 @@ public class Main extends Application {
                     }
                 });
                 
-                generatePane.getChildren().addAll(desc, cancelBtn, widthLabel, widthSpinner, heightLabel, heightSpinner, btnValidate, listDiff, diffLabel,
-                obstacleLabel, obstacleSpinner, bonusLabel, bonnusSpinner, energyLabel, energycb);
+                generatePane.getChildren().addAll(desc, cancelBtn, widthLabel, widthText, heightLabel, heightText, btnValidate, listDiff, diffLabel,
+                obstacleLabel, obstacleText, bonusLabel, bonusText, energyLabel, energycb);
 
                 Scene generate = new Scene(generatePane, windowWidth, WindowHeight);
                 primaryStage.setScene(generate);
