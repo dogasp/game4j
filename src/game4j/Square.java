@@ -12,14 +12,12 @@ public class Square {
     private boolean wasBonus = false;
     private char squareType; // V pour vide, B pour Bonus, O pour Obstacle, A pour Arrivée
     private Rectangle rendu;
-    private int gridWidth;
     private int[] distances = new int[4]; //up right down left
 
-    public Square(int x, int y, float width, int id, int gridWidth, String type, String[] distances){
+    public Square(int x, int y, float width, int id, String type, String[] distances){
         this.x = x;
         this.y = y;
         this.width = width;
-        this.gridWidth = gridWidth;
         this.id = id;
         this.squareType = type.charAt(0);
         for (int i = 0; i < 4; i ++){
@@ -27,11 +25,10 @@ public class Square {
         }
     }
 
-    public Square(int x, int y, float width, int id, int gridWidth, Character type, int[] distances){
+    public Square(int x, int y, float width, int id, Character type, int[] distances){
         this.x = x;
         this.y = y;
         this.width = width;
-        this.gridWidth = gridWidth;
         this.id = id;
         this.squareType = type;
         this.distances = distances;

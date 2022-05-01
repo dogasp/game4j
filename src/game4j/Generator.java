@@ -26,7 +26,7 @@ public class Generator {
             //création de chaque Square
             for (int j = 0; j < width*height; j ++){
                 int dist[] = {r.nextInt(101), r.nextInt(101), r.nextInt(101), r.nextInt(101)};
-                ListSquare.add(new Square(j%width, j/width, Main.WindowHeight/width, j, width, 'V', dist));
+                ListSquare.add(new Square(j%width, j/width, Main.WindowHeight/width, j, 'V', dist));
             }
             this.start = this.ListSquare.get(0);
             this.start.setType('D');
@@ -52,8 +52,10 @@ public class Generator {
                 }
             }
 
+            this.startEnergy = r.nextInt(width);
+
             //boucler pour trouver stamina opti
-            EnergyAlgo path = new EnergyAlgo(null, 0).findBestPathEnergy(this.ListSquare, width, height, startEnergy, this.start, energy);
+            EnergyAlgo path = new EnergyAlgo(null, 0).findBestPathEnergy(this.ListSquare, width, height, this.startEnergy, this.start, energy);
             if (path.getStamina() != -1000000000 && (energy && (path.getStamina() > 0))){ //si le chemin est possible et correspond aux attentes du joueur
                 //la difficulté définit la marge en energie qu'on a pour résoudre le problème
                 if (difficulty == "Easy"){

@@ -62,7 +62,7 @@ public class Sauvegarde implements Serializable{
         for (int i = 0; i < this.listX.size(); i++){
             int x =this.listX.get(i);
             int y = this.listY.get(i);
-            squareList.add(new Square(x, y, this.width, y*this.gridWidth+x, gridWidth, this.squareTypeList.get(i), this.distances.get(i)));
+            squareList.add(new Square(x, y, this.width, y*this.gridWidth+x, this.squareTypeList.get(i), this.distances.get(i)));
         }
         game.setSquareList(squareList);
         game.setStart(this.IdStart);

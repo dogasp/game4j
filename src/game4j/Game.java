@@ -60,7 +60,7 @@ public class Game {
                 for (int j = 0; j < this.width; j ++){
                     String tmp = myReader.nextLine();
                     String[] data = tmp.split(" ");
-                    this.squarelist.add(new Square(j, i, this.squareLength, i*this.width+j, this.width, data[0], Arrays.copyOfRange(data, 1, 5)));
+                    this.squarelist.add(new Square(j, i, this.squareLength, i*this.width+j, data[0], Arrays.copyOfRange(data, 1, 5)));
                     if (tmp.charAt(0) == 'D'){
                         this.start = squarelist.get(j);
                     }
@@ -193,7 +193,7 @@ public class Game {
         DijkstraAlgo algo = new DijkstraAlgo(this.squarelist, this.width, this.height);
         algo.optimiserDistance(this.start, this.finish);
 
-        EnergyAlgo res = new EnergyAlgo(this.squarelist, this.startEnergy).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start, true);
+        EnergyAlgo res = (new EnergyAlgo(null, 0)).findBestPathEnergy(this.squarelist, this.width, this.height, this.startEnergy, this.start, true);
 
         System.out.print("Chemin le plus optimal niveau energie: ");
         for (Square square : res.getHist()) {
