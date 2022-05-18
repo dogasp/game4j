@@ -2,13 +2,16 @@ package game4j;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import javafx.scene.image.ImageView;
 
 public class Player {
     private int energy;
@@ -17,9 +20,12 @@ public class Player {
     private int EarnedEnergy;
     private int LostEnergy;
     private float squareLength;
+    private AnchorPane pane;
     private Rectangle rendu;
     private int nbReturn; // nombre de retours en arrière (limite de 6)
     private List<Square> historiqueSquare = new ArrayList<Square>();
+    public String direction;
+    private Object ImageView;
 
     public Player(int energy, int x, int y, float squareLength){
         this.x = x;
@@ -88,12 +94,34 @@ public class Player {
         this.historiqueSquare = list;
     }
 
-    public int move(int dx, int dy, List<Square> squarelist, int width, int height){
+    public int move(int dx, int dy, List<Square> squarelist, int width, int height, String key){
         //retourne 0 si la partie continue, -1 si le joueur à perdu et 1 si le joueur à gagné
         if ((this.x + dx) < width && (this.x + dx) > -1 && (this.y + dy) < height && (this.y + dy) > -1){
             Square nextSquare = squarelist.get((this.y+dy)*width + (this.x+dx));
             //int distance = this.historiqueSquare.get(this.historiqueSquare.size() - 1).getDistance(nextSquare);
+            switch (key) {
+                case "UP":
+                    direction = "up";
+                    Image img1 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/up1.png");
+                    this.rendu.setFill(new ImagePattern(img1));
+                    break;
+                case "DOWN":
+                    direction = "down";
+                    Image img2 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/down1.png");
+                    this.rendu.setFill(new ImagePattern(img2));
+                    break;
+                case "RIGHT":
+                    direction = "right";
+                    Image img3 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/right1.png");
+                    this.rendu.setFill(new ImagePattern(img3));
+                    break;
+                case "LEFT":
+                    direction = "left";
+                    Image img4 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/left1.png");
+                    this.rendu.setFill(new ImagePattern(img4));
 
+                    break;
+            }
             this.historiqueSquare.add(nextSquare);
 
             this.energy -= 1;
@@ -139,15 +167,35 @@ public class Player {
     }
 
     public void afficher(AnchorPane root){
+
         this.rendu = new Rectangle(this.squareLength/4, this.squareLength/4, this.squareLength/2, this.squareLength/2); // taille à changer pour dynamic
-        this.rendu.setFill(Color.BEIGE);
-
         root.getChildren().add(this.rendu);
-
         TranslateTransition translate = new TranslateTransition(Duration.millis(150), this.rendu);
         translate.setToX(this.x*this.squareLength);
         translate.setToY(this.y*this.squareLength);
         translate.play();
+        Image img = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/down1.png");
+        this.rendu.setFill(new ImagePattern(img));
+        //animation sprite (WIP)
+        int COLUMNS  =   9;
+        int COUNT    =  9;
+        int OFFSET_X =  0;
+        int OFFSET_Y =  64;
+        int WIDTH    = 64;
+        int HEIGHT   = 64;
+        final ImageView imageView = new ImageView();
+        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
+        final Animation animation = new SpriteAnimation(
+                imageView,
+                Duration.millis(1000),
+                COUNT, COLUMNS,
+                OFFSET_X, OFFSET_Y,
+                WIDTH, HEIGHT
+        );
+        animation.setCycleCount(Animation.INDEFINITE);
+        animation.play();
+        //animation sprite (WIP)
+
     }
 
     public void initHistory(Square square){
