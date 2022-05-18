@@ -102,22 +102,22 @@ public class Player {
             switch (key) {
                 case "UP":
                     direction = "up";
-                    Image img1 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/up1.png");
+                    Image img1 = new Image("file:ressources/textures/up1.png");
                     this.rendu.setFill(new ImagePattern(img1));
                     break;
                 case "DOWN":
                     direction = "down";
-                    Image img2 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/down1.png");
+                    Image img2 = new Image("file:ressources/textures/down1.png");
                     this.rendu.setFill(new ImagePattern(img2));
                     break;
                 case "RIGHT":
                     direction = "right";
-                    Image img3 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/right1.png");
+                    Image img3 = new Image("file:ressources/textures/right1.png");
                     this.rendu.setFill(new ImagePattern(img3));
                     break;
                 case "LEFT":
                     direction = "left";
-                    Image img4 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/left1.png");
+                    Image img4 = new Image("file:ressources/textures/left1.png");
                     this.rendu.setFill(new ImagePattern(img4));
 
                     break;
@@ -174,7 +174,7 @@ public class Player {
         translate.setToX(this.x*this.squareLength);
         translate.setToY(this.y*this.squareLength);
         translate.play();
-        Image img = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/down1.png");
+        Image img = new Image("file:ressources/textures/down1.png");
         this.rendu.setFill(new ImagePattern(img));
         //animation sprite (WIP)
         int COLUMNS  =   9;

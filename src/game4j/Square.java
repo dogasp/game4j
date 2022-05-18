@@ -99,23 +99,23 @@ public class Square {
         this.rendu = new Rectangle(this.x*this.width, this.y*this.width, this.width, this.width);
         switch (this.squareType){
             case 'V':
-                Image img = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/grass.png");
+                Image img = new Image("file:ressources/textures/grass.png");
                 this.rendu.setFill(new ImagePattern(img));
                 break;
             case 'D':
-                Image img1 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/depart.png");
+                Image img1 = new Image("file:ressources/textures/depart.png");
                 this.rendu.setFill(new ImagePattern(img1));
                 break;
             case 'A':
-                Image img2 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/house.png");
+                Image img2 = new Image("file:ressources/textures/house.png");
                 this.rendu.setFill(new ImagePattern(img2));;
                 break;
             case 'O':
-                Image img3 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/tree.png");
+                Image img3 = new Image("file:ressources/textures/tree.png");
                 this.rendu.setFill(new ImagePattern(img3));
                 break;
             case 'B':
-                Image img4 = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/bonus.png");
+                Image img4 = new Image("file:ressources/textures/bonus.png");
                 this.rendu.setFill(new ImagePattern(img4));
         }
         root.getChildren().add(this.rendu);
@@ -123,7 +123,7 @@ public class Square {
 
     public void becomeVoid(){
         this.squareType = 'V';
-        Image img = new Image("C:/Users/CYTech Student/IdeaProjects/game/ressources/textures/grass.png");
+        Image img = new Image("file:ressources/textures/grass.png");
         this.rendu.setFill(new ImagePattern(img));
         this.wasBonus = true;
     }
