@@ -27,13 +27,7 @@ public class EnergyAlgo {
 
     private EnergyAlgo recursive(List<Square> historique, List<Square> squareList, int energy, int gridWidth, int gridHeight, Boolean optiEnergy){
         EnergyAlgo best = new EnergyAlgo(null, -1000000000);
-
-        /*if (optiEnergy && energy < 0){
-            return best;
-        }*/
-
         int delta = 0;
-
         Square lastSquare = historique.get(historique.size()-1);
 
         switch (lastSquare.getSquareType()){
@@ -61,17 +55,17 @@ public class EnergyAlgo {
 
             Boolean isIn = false;
 
-            for (Square square : historique) {
+            for (Square square : historique) { //check qu'on n'est pas déjà passé par la case
                 if (square.getId() == toTest.getId()){
                     isIn = true;
                 }
             }
             if (!isIn){
-                List<Square> tmphist = historique.stream().collect(Collectors.toList());
+                List<Square> tmphist = historique.stream().collect(Collectors.toList()); //copie
                 tmphist.add(toTest);
                 EnergyAlgo tmp = this.recursive(tmphist, squareList, energy + delta, gridWidth, gridHeight, optiEnergy);
 
-                if (tmp.getStamina() > best.getStamina()){
+                if (tmp.getStamina() > best.getStamina()){ //si on a un meilleur chemin, on l'enregistre
                     best.setStamina(tmp.getStamina());
                     best.setHistory(tmp.getHist());
                 }

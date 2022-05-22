@@ -151,89 +151,6 @@ public class DijkstraAlgo {
         return this;
     }
 
-    public DijkstraAlgo bellmanFord(Square start, Square end, int startEnergy){
-        this.optilist[start.getId()] = -startEnergy; //initialisation avec le départ
-        this.idList[start.getId()] = -1;
-
-        for (int i = 0; i < this.squarelist.size()-1; i ++){
-            Boolean haveChanged = false;
-
-            for (int j = 0; j < this.squarelist.size(); j++) {
-                int actualDistance = this.optilist[j];
-                Square selected = this.squarelist.get(j);
-                if (selected.getSquareType() == 'O'){
-                    continue;
-                }
-
-                if(selected.getY()-1 >= 0){
-                    int id = (selected.getY()-1)*this.gridWidth+selected.getX(); //calcul de l'id correspondant à la case visée par le déplacement
-                    if (this.squarelist.get(id).getSquareType() != 'O'){        // check si elle n'est pas un obstacle
-                        int delta = getDeltaNegative(this.squarelist.get(id)); // on récupère la valeur du déplacement (+1 si vide et -9 si bonus, c'est inversé)
-                        
-                        if (actualDistance + delta < this.optilist[id]){ //si le trajet est plus court, on l'enregistre
-                            this.optilist[id] = actualDistance + delta;
-                            this.idList[id] = j;
-                            haveChanged = true;
-                        }
-                    }
-                }
-                if(selected.getX()+1 < this.gridWidth){
-                    int id = selected.getY()*this.gridWidth+selected.getX()+1;
-                    if (this.squarelist.get(id).getSquareType() != 'O'){
-                        int delta = getDeltaNegative(this.squarelist.get(id));
-                        
-                        if (actualDistance + delta < this.optilist[id]){
-                            this.optilist[id] = actualDistance + delta;
-                            this.idList[id] = j;
-                            haveChanged = true;
-                        }
-                    }
-                }
-                if(selected.getY()+1 < this.gridHeight){
-                    int id = (selected.getY()+1)*this.gridWidth+selected.getX();
-                    if (this.squarelist.get(id).getSquareType() != 'O'){
-                        int delta = getDelta(this.squarelist.get(id));
-                        
-                        if (actualDistance + delta < this.optilist[id]){
-                            this.optilist[id] = actualDistance + delta;
-                            this.idList[id] = j;
-                            haveChanged = true;
-                        }
-                    }
-                }
-                if(selected.getX()-1 >= 0){
-                    int id = selected.getY()*this.gridWidth+selected.getX()-1;
-                    if (this.squarelist.get(id).getSquareType() != 'O'){
-                        int delta = getDelta(this.squarelist.get(id));
-                        
-                        if (actualDistance + delta < this.optilist[id]){
-                            this.optilist[id] = actualDistance + delta;
-                            this.idList[id] = j;
-                            haveChanged = true;
-                        }
-                    }
-                }
-            }
-
-            if (!haveChanged){
-                break;
-            }
-        }
-
-        List<Square> result = new ArrayList<Square>();
-        int id = end.getId();
-        while (id != start.getId()){
-            id = this.idList[id];
-            result.add(this.squarelist.get(id));
-        }
-        Collections.reverse(result);
-
-        this.value = -this.optilist[end.getId()];
-        this.path = result;
-
-        return this;
-    }
-
     public int getValue(){
         return this.value;
     }
@@ -243,6 +160,7 @@ public class DijkstraAlgo {
     }
 
     private int getDelta(Square square){
+        //retourne la valeur de distance associée à la case en question
         switch (square.getSquareType()){
             case 'V':
                 if(square.getWasBonnus()){
@@ -259,24 +177,8 @@ public class DijkstraAlgo {
         }
     }
 
-    private int getDeltaNegative(Square square){
-        switch (square.getSquareType()){
-            case 'V':
-                if(square.getWasBonnus()){
-                    return -9;
-                }else{
-                    return 1;
-                }
-            case 'B':
-                return -9;
-            case 'A':
-                return 1;
-            default:
-                return 0;
-        }
-    }
-
     public void calcEnergy(int startEnergy){
+        //parcours de la solution pour trouver l'énergie utilisée
         int energy = startEnergy;
         for (Square square : this.path) {
             if (square.getSquareType() != 'D'){

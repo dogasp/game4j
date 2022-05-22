@@ -77,6 +77,7 @@ public class Generator {
     }
 
     private int getMinStamina(List<Square> hist){
+        //calcul de l'énergie minimale pour que le parcours soit réalisable
         int accumulated = 0;
         int needed = 0;
         for (Square square : hist) {

@@ -2,10 +2,8 @@ package game4j;
 
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-
 
 
 public class Square {
@@ -130,7 +128,8 @@ public class Square {
 
     public void cancelVoid(){
         this.squareType = 'B';
-        this.rendu.setFill(Color.YELLOW);
+        Image img = new Image("file:ressources/textures/bonus.png");
+        this.rendu.setFill(new ImagePattern(img));
         this.wasBonus = false;
     }
 }

@@ -5,9 +5,6 @@ import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 
@@ -34,24 +31,10 @@ public class ReplayViewer {
                 this.speed = 1000; // 1sec par défaut
         }
         
-        this.game = new Game(root);
+        this.game = new Game(root, main);
         game.loadGame("ressources/replay/" + fileName);
         this.squareLength = game.getSquareWidth();
         
-        Button btnMenu = new Button();
-        btnMenu.setText("Retourner au menu");
-        AnchorPane.setRightAnchor(btnMenu, 20.0);
-        AnchorPane.setBottomAnchor(btnMenu, 10.0);
-
-        btnMenu.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event){
-                main.reset();
-            }
-        });
-
-        root.getChildren().add(btnMenu);
-
         this.player = this.game.getPlayer();
         this.player.setEnergy(this.game.getStartEnergy());
         this.historyList = player.getHistorySquare();
